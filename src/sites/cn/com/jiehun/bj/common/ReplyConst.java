@@ -7,5 +7,7 @@ public class ReplyConst {
 	public static final String REPLY_POST_ACTION_URL = "http://bj.jiehun.com.cn/bbs/topic/_addpost";
 	
 	public static final String FORM_REPLY_INPUT_NAME = "rr_content";
+	
+	public static final String HOST = "http://bj.jiehun.com.cn";
 
 }

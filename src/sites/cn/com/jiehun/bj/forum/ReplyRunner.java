@@ -1,6 +1,7 @@
 package sites.cn.com.jiehun.bj.forum;
 
 import httpClient.BrowseConst;
+import httpClient.BrowsePageRunner;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -15,6 +16,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
@@ -39,29 +41,14 @@ public class ReplyRunner extends PostRunner {
 	
 	private String replyPageURL;
 	
-	private Map<String, String> replyParamMap = new HashMap<String, String>();
-	
 	private List<NameValuePair> replyParamNameValList = new ArrayList<NameValuePair>();
 	
-	protected void initParamPair(){
-		replyParamNameValList.clear();
-		replyParamMap.clear();
-		replyParamMap.put("topic_uid", "");
-		replyParamMap.put("topic_id", "");
-		replyParamMap.put("post_uid", "");
-		replyParamMap.put("topic_creat_time", "");
-		replyParamMap.put("topic_title", "");
-		replyParamMap.put("city_host", "");
-		replyParamMap.put("post_total", "");
-		replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_NAME, "");
-	}
 	
 	public ReplyRunner(HttpClient httpClient, HttpContext httpContext, String replyContent){
 		this.httpClient = httpClient;
 		this.httpContext = httpContext;
 		this.replyContent = replyContent;
 		this.replyPageURL = (String)httpContext.getAttribute(BrowseConst.CONTEXT_BROWSE_ATTRIBUTE_URL);
-		initParamPair();
 	}
 	
 	protected void initHttpHeader(HttpPost httpPost){
@@ -75,35 +62,11 @@ public class ReplyRunner extends PostRunner {
 	
 	
 	private void initReplyParamValue(){
-		Parser httpParser = new Parser();
-		try {
-			httpParser.setURL(replyPageURL);
-			
-			Map<String, String> formMap = new HashMap<String, String>();
-			formMap.put("action", "/bbs/topic/_addpost");
-			formMap.put("method", "post");
-			formMap.put("id", "postForm");
-			
-			NodeList nodes = HttpHtmlParserUtils.getHiddenInputNodeListByForm(httpParser, formMap);
-			for(int i = 0; i < nodes.size(); i++){
-				Node node = nodes.elementAt(i);
-				if(node instanceof InputTag){
-					InputTag inputTag = (InputTag)node;
-//					System.out.println(inputTag.toHtml());
-					String  attrName = inputTag.getAttribute("name");
-					if(replyParamMap.containsKey(attrName)){
-						String value = inputTag.getAttribute("value");
-						replyParamMap.put(attrName, value);
-						replyParamNameValList.add(new BasicNameValuePair(attrName, value));
-					}
-				}
-			}
-			replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_NAME, replyContent);
-			replyParamNameValList.add(new BasicNameValuePair("rr_content", replyContent));
-		} catch (ParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		BrowsePageRunner httpGetReplyPage = new BrowsePageRunner(httpClient, httpContext, replyPageURL);
+		ParseFormInputParamHandler formInputParamHandler = new ParseFormInputParamHandler(this.replyParamNameValList, replyContent);
+		httpGetReplyPage.setReponseHandler(formInputParamHandler);
+		httpGetReplyPage.run();
+		
 	}
 
 	/**

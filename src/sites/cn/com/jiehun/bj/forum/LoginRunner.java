@@ -60,7 +60,7 @@ public class LoginRunner extends PostRunner {
 		}finally{
 			post.releaseConnection();
 			long end = System.currentTimeMillis();
-			System.out.println(end - start);
+			//System.out.println(end - start);
 		}
 		
 	}

@@ -1,8 +1,12 @@
 package sites.cn.com.jiehun.bj.forum;
 
+import java.io.IOException;
+
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -42,10 +46,10 @@ public class ParseURLHandler implements AfterResponseHandler {
 			System.out.println("没有要处理的URL!");
 			return;
 		}
-		Parser httpParser = new Parser();
+		
 		try {
-			httpParser.setURL(pageURL);
-			
+			String content = EntityUtils.toString(response.getEntity());
+			Parser httpParser = new Parser(content);
 			NodeFilter linkFilter = new NodeClassFilter(LinkTag.class);
 			
 			NodeFilter divParentFilter = new NodeClassFilter(Div.class);
@@ -74,10 +78,17 @@ public class ParseURLHandler implements AfterResponseHandler {
 				}
 			}
 			if(url != null){
+				url = ReplyConst.HOST + url;
 				System.out.println(url);
 			    httpContext.setAttribute(BrowseConst.CONTEXT_BROWSE_ATTRIBUTE_URL, url);	
 			}
 		} catch (ParserException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

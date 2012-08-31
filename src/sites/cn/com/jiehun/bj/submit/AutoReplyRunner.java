@@ -1,16 +1,26 @@
 package sites.cn.com.jiehun.bj.submit;
 
 import httpClient.BrowseConst;
+import httpClient.BrowsePageRunner;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.cookie.params.CookieSpecPNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+import sites.cn.com.jiehun.bj.common.ReplyConst;
 import sites.cn.com.jiehun.bj.forum.LoginRunner;
 import sites.cn.com.jiehun.bj.forum.ParseURLHandler;
 import sites.cn.com.jiehun.bj.forum.ReplyRunner;
 
+/**
+ * 针对社区公告做签到签退回复
+ * @author linjy
+ *
+ */
 public class AutoReplyRunner implements Runnable {
 	
 	private String loginUser = null;
@@ -35,6 +45,8 @@ public class AutoReplyRunner implements Runnable {
 	@Override
 	public void run() {
 		HttpClient httpClient = new DefaultHttpClient();
+		httpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
+		httpClient.getParams().setParameter(CookieSpecPNames.SINGLE_COOKIE_HEADER, true);
 		HttpContext httpContext = new BasicHttpContext();
 		try{
 			httpContext.setAttribute(BrowseConst.CONTEXT_LOGIN_USER, loginUser);
@@ -52,23 +64,23 @@ public class AutoReplyRunner implements Runnable {
 			}
 			
 		    String replyPageURL = (String)httpContext.getAttribute(BrowseConst.CONTEXT_BROWSE_ATTRIBUTE_URL);
-		    ParseURLHandler parseURLHandler = null; 
+		    ParseURLHandler parseURLHandler = new ParseURLHandler(httpContext, keyStr, null); 
+		    BrowsePageRunner browsePageRunner = null;
 		    while((replyPageURL == null) || ("".equals(replyPageURL))){
-		    	parseURLHandler = new ParseURLHandler(httpContext, keyStr, null);
-		    	parseURLHandler.handle(null);
+		    	browsePageRunner = new BrowsePageRunner(httpClient, httpContext, ReplyConst.PARSE_PAGE_URL);
+		    	browsePageRunner.setReponseHandler(parseURLHandler);
+		    	browsePageRunner.run();
 		    	replyPageURL = (String)httpContext.getAttribute(BrowseConst.CONTEXT_BROWSE_ATTRIBUTE_URL);
 		    	if((replyPageURL == null) || ("".equals(replyPageURL))){
 		    		Thread.sleep(replyConfig.getParseInterval());
 		    	}
 		    }
-		    
 		    Thread.sleep(replyConfig.getReplyPostInterval());
-		    ReplyRunner reply = new ReplyRunner(httpClient, httpContext, replyPageURL);
+		    ReplyRunner reply = new ReplyRunner(httpClient, httpContext, replyContent);
 		    reply.run();
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		
 	}
 

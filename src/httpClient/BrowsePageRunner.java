@@ -16,10 +16,16 @@ public class BrowsePageRunner implements Runnable {
 	
 	private String url;
 	
-	public BrowsePageRunner(HttpClient httpClient, HttpContext httpContext){
+	private AfterResponseHandler reponseHandler = null;
+	
+	public void setReponseHandler(AfterResponseHandler reponseHandler) {
+		this.reponseHandler = reponseHandler;
+	}
+
+	public BrowsePageRunner(HttpClient httpClient, HttpContext httpContext, String url){
 		this.httpClient = httpClient;
 		this.httpContext = httpContext;
-		this.url = (String)httpContext.getAttribute(BrowseConst.CONTEXT_BROWSE_ATTRIBUTE_URL);
+		this.url = url;
 	}
 
 	@Override
@@ -30,9 +36,8 @@ public class BrowsePageRunner implements Runnable {
 		HttpGet httpGet = new HttpGet(this.url);
 		try{
 			HttpResponse response = httpClient.execute(httpGet, httpContext);
-			AfterResponseHandler responseHandler = (AfterResponseHandler)httpContext.getAttribute(BrowseConst.CONTEXT_AFTER_HANDLE);
-			if(responseHandler != null){
-				responseHandler.handle(response);
+			if(reponseHandler != null){
+				reponseHandler.handle(response);
 			}
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
