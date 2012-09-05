@@ -2,6 +2,7 @@ package sites.cn.com.jiehun.bj.forum;
 
 import httpClient.BrowseConst;
 import httpClient.BrowsePageRunner;
+import httpClient.reply.ReplyPolicy;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -37,17 +38,22 @@ public class ReplyRunner extends PostRunner {
 	
 	private HttpContext httpContext;
 	
-	private String replyContent;
+//	private String replyContent;
+	
+	private ReplyPolicy replyPolicy;
 	
 	private String replyPageURL;
 	
 	private List<NameValuePair> replyParamNameValList = new ArrayList<NameValuePair>();
 	
+	private Integer curFloorCount;
 	
-	public ReplyRunner(HttpClient httpClient, HttpContext httpContext, String replyContent){
+	
+	public ReplyRunner(HttpClient httpClient, HttpContext httpContext, ReplyPolicy replyPolicy){
 		this.httpClient = httpClient;
 		this.httpContext = httpContext;
-		this.replyContent = replyContent;
+		this.replyPolicy = replyPolicy;
+//		this.replyContent = replyContent;
 		this.replyPageURL = (String)httpContext.getAttribute(BrowseConst.CONTEXT_BROWSE_ATTRIBUTE_URL);
 	}
 	
@@ -61,9 +67,9 @@ public class ReplyRunner extends PostRunner {
 	
 	
 	
-	private void initReplyParamValue(){
+	protected void initReplyParamValue(){
 		BrowsePageRunner httpGetReplyPage = new BrowsePageRunner(httpClient, httpContext, replyPageURL);
-		ParseFormInputParamHandler formInputParamHandler = new ParseFormInputParamHandler(this.replyParamNameValList, replyContent);
+		ParseFormInputParamHandler formInputParamHandler = new ParseFormInputParamHandler(this.replyParamNameValList, replyPolicy);
 		httpGetReplyPage.setReponseHandler(formInputParamHandler);
 		httpGetReplyPage.run();
 		

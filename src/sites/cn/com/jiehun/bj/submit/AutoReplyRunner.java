@@ -2,6 +2,7 @@ package sites.cn.com.jiehun.bj.submit;
 
 import httpClient.BrowseConst;
 import httpClient.BrowsePageRunner;
+import httpClient.reply.ReplyPolicy;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.params.ClientPNames;
@@ -23,65 +24,108 @@ import sites.cn.com.jiehun.bj.forum.ReplyRunner;
  */
 public class AutoReplyRunner implements Runnable {
 	
-	private String loginUser = null;
+	protected String loginUser = null;
 	
-	private String replyContent = null;
+	protected String replyContent = null;
 	
-	private String keyStr = null;
+	protected ReplyPolicy replyPolicy = null;
 	
-	private AutoReplyConfig replyConfig = null;
+	protected String keyStr = null;
 	
-	public AutoReplyRunner(String loginUser, String keyStr, String replyContent, AutoReplyConfig autoReplyConfig){
+	protected AutoReplyConfig replyConfig = null;
+	
+	protected HttpClient httpClient = null;
+	
+	protected HttpContext httpContext = null;
+	
+	protected String replyPageURL = null;
+	
+	public String getReplyPageURL() {
+		return replyPageURL;
+	}
+
+	public void setReplyPageURL(String replyPageURL) {
+		this.replyPageURL = replyPageURL;
+	}
+
+	protected boolean isNeedLogin(){
+		return true;
+	}
+	
+	protected void initHttpContext(){
+		if(httpContext == null){
+			httpContext = new BasicHttpContext();
+			httpContext.setAttribute(BrowseConst.CONTEXT_LOGIN_USER, loginUser);
+			httpContext.setAttribute(BrowseConst.CONTEXT_IS_LOGINED, false);
+		}
+	}
+	
+	private void initHttpClient(){
+		if(httpClient == null){
+			httpClient = new DefaultHttpClient();
+			httpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
+			httpClient.getParams().setParameter(CookieSpecPNames.SINGLE_COOKIE_HEADER, true);
+		}
+	}
+	
+	public AutoReplyRunner(String loginUser, String keyStr, ReplyPolicy replyPolicy, AutoReplyConfig autoReplyConfig){
 		this.loginUser = loginUser;
-		this.replyContent = replyContent;
+//		this.replyContent = replyContent;
+		this.replyPolicy = replyPolicy;
 		this.keyStr = keyStr;
 		if(autoReplyConfig == null){
 			replyConfig = new AutoReplyConfig();
 		}else{
 			replyConfig = autoReplyConfig;
 		}
+		initHttpClient();
+		initHttpContext();
+	}
+	
+	protected void doLogin() throws InterruptedException{
+		boolean isLogined = (Boolean)httpContext.getAttribute(BrowseConst.CONTEXT_IS_LOGINED);
+		LoginRunner login = new LoginRunner(httpClient, httpContext);
+		while(!isLogined){
+			login.run();
+			isLogined = (Boolean)httpContext.getAttribute(BrowseConst.CONTEXT_IS_LOGINED);
+			if(!isLogined){
+				Thread.sleep(replyConfig.getLoginInterval());
+			}	
+		}
+	}
+	
+	protected void doReply() throws InterruptedException{
+		Thread.sleep(replyConfig.getReplyPostInterval());
+	    ReplyRunner reply = new ReplyRunner(httpClient, httpContext, this.replyPolicy);
+	    reply.run();
 	}
 
+	protected void doParse() throws InterruptedException{
+	    replyPageURL = (String)httpContext.getAttribute(BrowseConst.CONTEXT_BROWSE_ATTRIBUTE_URL);
+	    ParseURLHandler parseURLHandler = new ParseURLHandler(httpContext, keyStr); 
+	    BrowsePageRunner browsePageRunner = new BrowsePageRunner(httpClient, httpContext, ReplyConst.PARSE_PAGE_URL);;
+	    browsePageRunner.setReponseHandler(parseURLHandler);
+	    while((replyPageURL == null) || ("".equals(replyPageURL))){
+	    	browsePageRunner.run();
+	    	replyPageURL = (String)httpContext.getAttribute(BrowseConst.CONTEXT_BROWSE_ATTRIBUTE_URL);
+	    	if((replyPageURL == null) || ("".equals(replyPageURL))){
+	    		Thread.sleep(replyConfig.getParseInterval());
+	    	}
+	    }
+	}
 	@Override
 	public void run() {
-		HttpClient httpClient = new DefaultHttpClient();
-		httpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-		httpClient.getParams().setParameter(CookieSpecPNames.SINGLE_COOKIE_HEADER, true);
-		HttpContext httpContext = new BasicHttpContext();
 		try{
-			httpContext.setAttribute(BrowseConst.CONTEXT_LOGIN_USER, loginUser);
-			boolean isLogin = false;
-			httpContext.setAttribute(BrowseConst.CONTEXT_IS_LOGINED, isLogin);
-			
-			LoginRunner login = null;
-			while(!isLogin){
-				login = new LoginRunner(httpClient, httpContext);
-				login.run();
-				isLogin = (Boolean)httpContext.getAttribute(BrowseConst.CONTEXT_IS_LOGINED);
-				if(!isLogin){
-					Thread.sleep(replyConfig.getLoginInterval());
-				}	
+			if(isNeedLogin()){
+				doLogin();
 			}
 			
-		    String replyPageURL = (String)httpContext.getAttribute(BrowseConst.CONTEXT_BROWSE_ATTRIBUTE_URL);
-		    ParseURLHandler parseURLHandler = new ParseURLHandler(httpContext, keyStr, null); 
-		    BrowsePageRunner browsePageRunner = null;
-		    while((replyPageURL == null) || ("".equals(replyPageURL))){
-		    	browsePageRunner = new BrowsePageRunner(httpClient, httpContext, ReplyConst.PARSE_PAGE_URL);
-		    	browsePageRunner.setReponseHandler(parseURLHandler);
-		    	browsePageRunner.run();
-		    	replyPageURL = (String)httpContext.getAttribute(BrowseConst.CONTEXT_BROWSE_ATTRIBUTE_URL);
-		    	if((replyPageURL == null) || ("".equals(replyPageURL))){
-		    		Thread.sleep(replyConfig.getParseInterval());
-		    	}
-		    }
-		    Thread.sleep(replyConfig.getReplyPostInterval());
-		    ReplyRunner reply = new ReplyRunner(httpClient, httpContext, replyContent);
-		    reply.run();
+			doParse();
+		    
+		    doReply();
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 
 	/**

@@ -21,31 +21,33 @@ import sites.cn.com.jiehun.bj.common.ReplyConst;
 import common.HttpHtmlParserUtils;
 
 import httpClient.AfterResponseHandler;
+import httpClient.RefleshFloorCount;
+import httpClient.reply.ReplyPolicy;
 
-public class ParseFormInputParamHandler implements AfterResponseHandler {
+public class ParseFormInputParamHandler implements RefleshFloorCount,AfterResponseHandler {
 	
-	private List<NameValuePair> formInputParams = null;
+	protected List<NameValuePair> formInputParams = null;
 	
-	private String replyContent = null;
+	protected ReplyPolicy replyPolicy = null;
 	
-	private Map<String, String> replyParamMap = new HashMap<String, String>();
+	protected Map<String, String> replyParamMap = new HashMap<String, String>();
 	
 	protected void initParamPair(){
 		replyParamMap.clear();
 		
-		replyParamMap.put("topic_uid", "");
-		replyParamMap.put("topic_id", "");
-		replyParamMap.put("post_uid", "");
-		replyParamMap.put("topic_creat_time", "");
-		replyParamMap.put("topic_title", "");
-		replyParamMap.put("city_host", "");
-		replyParamMap.put("post_total", "");
-		replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_NAME, replyContent);
+		replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_PARAM_NAME_TOPIC_UID, "");
+		replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_PARAM_NAME_TOPIC_ID, "");
+		replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_PARAM_NAME_POST_UID, "");
+		replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_PARAM_NAME_TOPIC_CREATE_TIME, "");
+		replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_PARAM_NAME_TOPIC_TITLE, "");
+		replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_PARAM_NAME_CITY_HOST, "");
+		replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_PARAM_NAME_POST_TOTAL, "");
+		replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_NAME, "");
 	}
 	
-	public ParseFormInputParamHandler(List<NameValuePair> formInputParams, String replyContent){
+	public ParseFormInputParamHandler(List<NameValuePair> formInputParams, ReplyPolicy replyPolicy){
 		this.formInputParams = formInputParams;
-		this.replyContent = replyContent;
+		this.replyPolicy = replyPolicy;
 		initParamPair();
 	}
 
@@ -74,6 +76,8 @@ public class ParseFormInputParamHandler implements AfterResponseHandler {
 					}
 				}
 			}
+			int floorCount = getCurFloorCount();
+			String replyContent = replyPolicy.getReplyContent(floorCount);
 			replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_NAME, replyContent);
 			formInputParams.add(new BasicNameValuePair("rr_content", replyContent));
 		} catch (ParseException e) {
@@ -88,6 +92,10 @@ public class ParseFormInputParamHandler implements AfterResponseHandler {
 		}
 		
 	}
+	
+	public String getParamVal(String paramName){
+		return replyParamMap.get(paramName);
+	}
 
 	/**
 	 * @param args
@@ -95,6 +103,18 @@ public class ParseFormInputParamHandler implements AfterResponseHandler {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public int getCurFloorCount() {
+		String floorCountStr = getParamVal(ReplyConst.FORM_REPLY_INPUT_PARAM_NAME_POST_TOTAL);
+		if((floorCountStr != null) && (!"".equals(floorCountStr))){
+			return Integer.valueOf(floorCountStr) + 1;	
+		}
+		else{
+			throw new RuntimeException("没有找到帖子数!");
+		}
+		
 	}
 
 }

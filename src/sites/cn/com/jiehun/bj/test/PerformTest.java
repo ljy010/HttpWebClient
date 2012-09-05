@@ -33,7 +33,7 @@ public class PerformTest {
 		HttpContext httpContext = new BasicHttpContext();
 		String replyPageURL = null;
 		String keyStr = "8月30日签到";
-	    ParseURLHandler parseURLHandler = new ParseURLHandler(httpContext, keyStr, null); 
+	    ParseURLHandler parseURLHandler = new ParseURLHandler(httpContext, keyStr); 
 	    int time = 20;
 	    int index = 0;
 	    int totalTime = 0;
@@ -59,7 +59,7 @@ public class PerformTest {
 		HttpContext httpContext = new BasicHttpContext();
 		String replyPageURL = null;
 		String keyStr = "9月1日签到";
-	    ParseURLHandler parseURLHandler = new ParseURLHandler(httpContext, keyStr, null); 
+	    ParseURLHandler parseURLHandler = new ParseURLHandler(httpContext, keyStr); 
 	    BrowsePageRunner browsePageRunner = null;
 	    while((replyPageURL == null) || ("".equals(replyPageURL))){
 	    	browsePageRunner = new BrowsePageRunner(httpClient, httpContext, ReplyConst.PARSE_PAGE_URL);

@@ -15,6 +15,10 @@ public class QianDao implements Runnable{
 	private AutoReplyConfig replyConfig = new AutoReplyConfig();
 	
 	private String loginUser = "ljy";
+	
+	public QianDao(String user){
+		this.loginUser = user;
+	}
 
 	@Override
 	public void run() {
@@ -26,8 +30,9 @@ public class QianDao implements Runnable{
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		QianDao qianDao = new QianDao();
-		qianDao.run();
+        
+		QianDao qianDao = new QianDao("ljy");
+		//qianDao.run();
 	}
 
 }

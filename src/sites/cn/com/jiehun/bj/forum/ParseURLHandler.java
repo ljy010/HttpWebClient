@@ -28,25 +28,16 @@ public class ParseURLHandler implements AfterResponseHandler {
 	
 	private HttpContext httpContext;
 	
-	private String pageURL = ReplyConst.PARSE_PAGE_URL; 
-	
 	private String keyStr = null;
 	
-	public ParseURLHandler(HttpContext httpContext, String keyStr, String pageURL){
+	public ParseURLHandler(HttpContext httpContext, String keyStr){
 		this.httpContext = httpContext;
 		this.keyStr = keyStr;
-		if((pageURL != null) && (!"".equals(pageURL))){
-			this.pageURL = pageURL;	
-		}
+		
 	}
 
 	@Override
 	public void handle(HttpResponse response) {
-		if((pageURL == null) || ("".equals(pageURL))){
-			System.out.println("没有要处理的URL!");
-			return;
-		}
-		
 		try {
 			String content = EntityUtils.toString(response.getEntity());
 			Parser httpParser = new Parser(content);
@@ -99,7 +90,7 @@ public class ParseURLHandler implements AfterResponseHandler {
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();
 		HttpContext httpContext = new BasicHttpContext();
-		ParseURLHandler parseURLHandler = new ParseURLHandler(httpContext, "8月30日签到", null);
+		ParseURLHandler parseURLHandler = new ParseURLHandler(httpContext, "8月30日签到");
 		parseURLHandler.handle(null);
 		long end = System.currentTimeMillis();
 		System.out.println(end - start);

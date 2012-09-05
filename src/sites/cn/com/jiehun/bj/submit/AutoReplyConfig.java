@@ -6,7 +6,7 @@ public class AutoReplyConfig {
 	
 	private long parseInterval = 500;
 	
-	private long replyPostInterval = 4000;
+	private long replyPostInterval = 3000;
 	
 
 	public long getLoginInterval() {
