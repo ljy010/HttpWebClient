@@ -1,5 +1,7 @@
 package sites.cn.com.jiehun.bj.scene;
 
+import httpClient.reply.DefaultReplyPolicy;
+import httpClient.reply.ReplyPolicy;
 import sites.cn.com.jiehun.bj.submit.AutoReplyConfig;
 import sites.cn.com.jiehun.bj.submit.AutoReplyRunner;
 import common.DateUtils;
@@ -22,7 +24,8 @@ public class QianDao implements Runnable{
 
 	@Override
 	public void run() {
-		AutoReplyRunner autoReply = new AutoReplyRunner(loginUser, keyStr, replyStr, replyConfig);
+		ReplyPolicy defaultReplyPolicy = new DefaultReplyPolicy(replyStr);
+		AutoReplyRunner autoReply = new AutoReplyRunner(loginUser, keyStr, defaultReplyPolicy, replyConfig);
 		autoReply.run();
 	}
 	
@@ -30,9 +33,8 @@ public class QianDao implements Runnable{
 	 * @param args
 	 */
 	public static void main(String[] args) {
-        
 		QianDao qianDao = new QianDao("ljy");
-		//qianDao.run();
+		qianDao.run();
 	}
 
 }

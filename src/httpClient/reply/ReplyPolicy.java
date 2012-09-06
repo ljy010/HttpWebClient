@@ -6,9 +6,9 @@ public interface ReplyPolicy {
 	
 	public int replyContentCount();
 	
-	public void setReply(int floorIndex, String reply);
+	public void addReply(FloorReply floorReply);
 	
-	public void setDefaultReply(String reply);
+	public void setDefaultReply(FloorReply defaultReply);
 	
-	public String getDefaultReply();
+	public FloorReply getDefaultReply();
 }

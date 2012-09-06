@@ -1,5 +1,7 @@
 package sites.cn.com.jiehun.bj.scene;
 
+import httpClient.reply.DefaultReplyPolicy;
+import httpClient.reply.ReplyPolicy;
 import sites.cn.com.jiehun.bj.submit.AutoReplyConfig;
 import sites.cn.com.jiehun.bj.submit.AutoReplyRunner;
 
@@ -18,7 +20,8 @@ public class QianTui implements Runnable {
 
 	@Override
 	public void run() {
-		AutoReplyRunner autoReply = new AutoReplyRunner(loginUser, keyStr, replyStr, replyConfig);
+		ReplyPolicy defaultReplyPolicy = new DefaultReplyPolicy(replyStr);
+		AutoReplyRunner autoReply = new AutoReplyRunner(loginUser, keyStr, defaultReplyPolicy, replyConfig);
 		autoReply.run();
 	}
 	

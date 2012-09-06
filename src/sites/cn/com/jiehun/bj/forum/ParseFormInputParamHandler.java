@@ -22,13 +22,15 @@ import common.HttpHtmlParserUtils;
 
 import httpClient.AfterResponseHandler;
 import httpClient.RefleshFloorCount;
+import httpClient.reply.FloorReply;
 import httpClient.reply.ReplyPolicy;
+import httpClient.reply.ResponseReplyContentHandler;
 
-public class ParseFormInputParamHandler implements RefleshFloorCount,AfterResponseHandler {
+public class ParseFormInputParamHandler implements RefleshFloorCount, ResponseReplyContentHandler, AfterResponseHandler {
 	
 	protected List<NameValuePair> formInputParams = null;
 	
-	protected ReplyPolicy replyPolicy = null;
+	protected String replyContent;
 	
 	protected Map<String, String> replyParamMap = new HashMap<String, String>();
 	
@@ -45,9 +47,9 @@ public class ParseFormInputParamHandler implements RefleshFloorCount,AfterRespon
 		replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_NAME, "");
 	}
 	
-	public ParseFormInputParamHandler(List<NameValuePair> formInputParams, ReplyPolicy replyPolicy){
+	public ParseFormInputParamHandler(List<NameValuePair> formInputParams, String replyContent){
 		this.formInputParams = formInputParams;
-		this.replyPolicy = replyPolicy;
+		this.replyContent = replyContent;
 		initParamPair();
 	}
 
@@ -76,8 +78,6 @@ public class ParseFormInputParamHandler implements RefleshFloorCount,AfterRespon
 					}
 				}
 			}
-			int floorCount = getCurFloorCount();
-			String replyContent = replyPolicy.getReplyContent(floorCount);
 			replyParamMap.put(ReplyConst.FORM_REPLY_INPUT_NAME, replyContent);
 			formInputParams.add(new BasicNameValuePair("rr_content", replyContent));
 		} catch (ParseException e) {
@@ -115,6 +115,19 @@ public class ParseFormInputParamHandler implements RefleshFloorCount,AfterRespon
 			throw new RuntimeException("没有找到帖子数!");
 		}
 		
+	}
+
+	@Override
+	public String getReplyContent(int curFloorCount, ReplyPolicy replyPolicy) {
+		FloorReply floorReply = null;
+		for(int i = 0; i < replyPolicy.replyContentCount(); i++){
+			floorReply = replyPolicy.getReplyContent(i);
+			if(floorReply.getFloorIndex() == curFloorCount){
+				return floorReply.getReply();
+			}
+		}
+		floorReply = replyPolicy.getDefaultReply();
+		return floorReply.getReply();
 	}
 
 }

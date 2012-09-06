@@ -1,64 +1,38 @@
 package httpClient.reply;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class GrabFloorDiffReplyPolicy implements ReplyPolicy {
 	
-	private Map<Integer, String> replyMap = null;
+	private FloorReply defaultReply = null;
 	
-	private String defaultReply;
-	
-	public GrabFloorDiffReplyPolicy(String defaultReply){
-		replyMap = new TreeMap<Integer, String>(new Comparator<Integer>(){
+	private List<FloorReply> replys = new ArrayList<FloorReply>();
 
-			@Override
-			public int compare(Integer o1, Integer o2) {
-				return o1 - o2;
-			}
-			
-		});
-		setDefaultReply(defaultReply);
-	}
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	@Override
+	public void addReply(FloorReply floorReply) {
+		replys.add(floorReply);
 	}
 
 	@Override
-	public String getReplyContent(int curFloorIndex) {
-		String reply = replyMap.get(curFloorIndex);
-		if((reply == null) || ("".equals(reply))){
-			return getDefaultReply();
-		}
-		else{
-			return reply;
-		}
+	public FloorReply getDefaultReply() {
+		return defaultReply;
+	}
+
+	@Override
+	public FloorReply getReplyContent(int index) {
+		return replys.get(index);
 	}
 
 	@Override
 	public int replyContentCount() {
-		return replyMap.size();
+		return replys.size();
 	}
 
 	@Override
-	public void setReply(int floorIndex, String reply) {
-		replyMap.put(floorIndex, reply);
+	public void setDefaultReply(FloorReply defaultReply) {
+		this.defaultReply = defaultReply;
 	}
-
-	@Override
-	public String getDefaultReply() {
-		return this.defaultReply;
-	}
-
-	@Override
-	public void setDefaultReply(String reply) {
-		this.defaultReply = reply;
-	}
-
+	
 }

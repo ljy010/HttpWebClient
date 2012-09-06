@@ -2,22 +2,24 @@ package httpClient.reply;
 
 public class DefaultReplyPolicy implements ReplyPolicy {
 	
-	private String reply;
+	private FloorReply defaultReply;
 	
 	public DefaultReplyPolicy(String reply){
-		this.reply = reply;
-	}
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		defaultReply = new FloorReply(-1, reply);
 	}
 
 	@Override
-	public String getReplyContent(int curFloorIndex) {
+	public void addReply(FloorReply floorReply) {
+		return;
+	}
+
+	@Override
+	public FloorReply getDefaultReply() {
+		return defaultReply;
+	}
+
+	@Override
+	public FloorReply getReplyContent(int index) {
 		return getDefaultReply();
 	}
 
@@ -27,19 +29,8 @@ public class DefaultReplyPolicy implements ReplyPolicy {
 	}
 
 	@Override
-	public void setReply(int floorIndex, String reply) {
-		setDefaultReply(reply);
+	public void setDefaultReply(FloorReply defaultReply) {
+		this.defaultReply = defaultReply;
 	}
-
-	@Override
-	public String getDefaultReply() {
-		return this.reply;
-	}
-
-	@Override
-	public void setDefaultReply(String reply) {
-		this.reply = reply;
-	}
-
-
+	
 }

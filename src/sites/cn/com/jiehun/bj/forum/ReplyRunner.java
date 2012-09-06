@@ -2,6 +2,7 @@ package sites.cn.com.jiehun.bj.forum;
 
 import httpClient.BrowseConst;
 import httpClient.BrowsePageRunner;
+import httpClient.reply.ReplyParamNameValHandler;
 import httpClient.reply.ReplyPolicy;
 
 import java.io.IOException;
@@ -38,22 +39,19 @@ public class ReplyRunner extends PostRunner {
 	
 	private HttpContext httpContext;
 	
-//	private String replyContent;
+	private ReplyParamNameValHandler paramNameValHandler;
 	
-	private ReplyPolicy replyPolicy;
+//	private ReplyPolicy replyPolicy;
 	
 	private String replyPageURL;
 	
 	private List<NameValuePair> replyParamNameValList = new ArrayList<NameValuePair>();
 	
-	private Integer curFloorCount;
 	
-	
-	public ReplyRunner(HttpClient httpClient, HttpContext httpContext, ReplyPolicy replyPolicy){
+	public ReplyRunner(HttpClient httpClient, HttpContext httpContext, ReplyParamNameValHandler replyParamNameValHandler){
 		this.httpClient = httpClient;
 		this.httpContext = httpContext;
-		this.replyPolicy = replyPolicy;
-//		this.replyContent = replyContent;
+		this.paramNameValHandler = replyParamNameValHandler;
 		this.replyPageURL = (String)httpContext.getAttribute(BrowseConst.CONTEXT_BROWSE_ATTRIBUTE_URL);
 	}
 	
@@ -68,11 +66,12 @@ public class ReplyRunner extends PostRunner {
 	
 	
 	protected void initReplyParamValue(){
-		BrowsePageRunner httpGetReplyPage = new BrowsePageRunner(httpClient, httpContext, replyPageURL);
-		ParseFormInputParamHandler formInputParamHandler = new ParseFormInputParamHandler(this.replyParamNameValList, replyPolicy);
-		httpGetReplyPage.setReponseHandler(formInputParamHandler);
-		httpGetReplyPage.run();
-		
+//		BrowsePageRunner httpGetReplyPage = new BrowsePageRunner(httpClient, httpContext, replyPageURL);
+//		ParseFormInputParamHandler formInputParamHandler = new ParseFormInputParamHandler(this.replyParamNameValList, replyContent);
+//		httpGetReplyPage.setReponseHandler(formInputParamHandler);
+//		httpGetReplyPage.run();
+//		
+		this.replyParamNameValList = paramNameValHandler.getReplyParamNamValList();
 	}
 
 	/**

@@ -2,6 +2,7 @@ package sites.cn.com.jiehun.bj.submit;
 
 import httpClient.BrowseConst;
 import httpClient.BrowsePageRunner;
+import httpClient.reply.ReplyParamNameValHandler;
 import httpClient.reply.ReplyPolicy;
 
 import org.apache.http.client.HttpClient;
@@ -39,6 +40,8 @@ public class AutoReplyRunner implements Runnable {
 	protected HttpContext httpContext = null;
 	
 	protected String replyPageURL = null;
+	
+	protected ReplyParamNameValHandler replyParamNameValHandler = null;
 	
 	public String getReplyPageURL() {
 		return replyPageURL;
@@ -94,9 +97,16 @@ public class AutoReplyRunner implements Runnable {
 		}
 	}
 	
+    
+	
+	public void setReplyParamNameValHandler(
+			ReplyParamNameValHandler replyParamNameValHandler) {
+		this.replyParamNameValHandler = replyParamNameValHandler;
+	}
+
 	protected void doReply() throws InterruptedException{
 		Thread.sleep(replyConfig.getReplyPostInterval());
-	    ReplyRunner reply = new ReplyRunner(httpClient, httpContext, this.replyPolicy);
+	    ReplyRunner reply = new ReplyRunner(httpClient, httpContext, this.replyParamNameValHandler);
 	    reply.run();
 	}
 
