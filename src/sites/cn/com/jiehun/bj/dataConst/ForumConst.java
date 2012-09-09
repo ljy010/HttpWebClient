@@ -31,5 +31,7 @@ public class ForumConst {
 	public static String FORUM_LOGIN_ACTION_URL = "http://bj.jiehun.com.cn/accounts/_login";
 
 	public static String FORUM_LOGIN_URL = "http://bj.jiehun.com.cn/accounts/login?u=%2Fbbs%2F";
+	
+	public static String FORUM_GET_REFER_URL = "http://bj.jiehun.com.cn/bbs/65?cid=164&order=new";
 
 }

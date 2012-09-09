@@ -23,7 +23,7 @@ public class ReplyRequestAction<T> extends RequestAbstractAction<T> {
 
 	@Override
 	public T execute() {
-		if((getRequestURL() == null) || (!"".equals(getRequestURL()))){
+		if((getRequestURL() == null) || ("".equals(getRequestURL()))){
 			throw new RuntimeException("请求地址不能为空!");
 		}
 		HttpHeaders httpHeaders = HttpHeaderFactory.getForumPostHeaders();
