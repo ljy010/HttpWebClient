@@ -4,6 +4,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import core.HttpClientFactory;
+
 import sites.cn.com.jiehun.bj.action.LoginRequestAction;
 import sites.cn.com.jiehun.bj.scene.LoginScene;
 import sites.cn.com.jiehun.bj.scene.LoginState;
@@ -23,7 +25,7 @@ public abstract class ReplyAbstractExecutor implements ReplyScene, LoginScene {
 	
 	public ReplyAbstractExecutor(String loginUser){
 		this.loginUser = loginUser;
-		httpClient = new DefaultHttpClient();
+		httpClient = HttpClientFactory.createHttpClient();
 		loginState = new LoginState();
 	}
 	

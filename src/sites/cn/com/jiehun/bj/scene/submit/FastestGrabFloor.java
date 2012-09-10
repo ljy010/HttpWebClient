@@ -9,10 +9,13 @@ public class FastestGrabFloor extends GrabFloorAbstract {
 
 	private String replyContent;
 	
+	private String parseKeyWord;
 	
-	public FastestGrabFloor(String loginUser, ExecutorConfig executorConfig, String replyContent) {
+	
+	public FastestGrabFloor(String loginUser, ExecutorConfig executorConfig, String parseKeyWord, String replyContent) {
 		super(loginUser, executorConfig);
 		this.replyContent = replyContent;
+		this.parseKeyWord = parseKeyWord;
 	}
 
 	
@@ -31,16 +34,18 @@ public class FastestGrabFloor extends GrabFloorAbstract {
 	@Override
 	public void grabFloor() {
 		ReplyScene fgre = new FastestGrabFloorReplyExecutor(this.login_user,
-				this.mainParsePage, executorConfig, getReplyContent());
+				this.mainParsePage, executorConfig, parseKeyWord, getReplyContent());
 		fgre.reply();
 	}
 	
 	public static void main(String[] args) {
-		String replyContent = DateUtils.getCurrentMonthDay() + "签到";
+		String parseKeyWord = DateUtils.getCurrentMonthDay() + "签到";
+		
+		String replyContent = "签到了签到了哈";
 		
 		ExecutorConfig executorConfig = new ExecutorConfig();
 		
-		FastestGrabFloor fastestGrabFloor = new FastestGrabFloor("ljy", executorConfig, replyContent);
+		FastestGrabFloor fastestGrabFloor = new FastestGrabFloor("ljy", executorConfig, parseKeyWord, replyContent);
 		fastestGrabFloor.run();
 	}
 

@@ -15,8 +15,8 @@ public class ReplyRequestAction<T> extends RequestAbstractAction<T> {
 	private HttpParams httpParams = null;
 	
 	public ReplyRequestAction(HttpClient httpClient,
-			ResponseHandler<T> responseHandler, HttpParams httpParams, String referURL) {
-		super(httpClient, responseHandler);
+			ResponseHandler<T> responseHandler, HttpParams httpParams, String requestURL, String referURL) {
+		super(httpClient, requestURL, responseHandler);
 		this.referURL = referURL;
 		this.httpParams = httpParams;
 	}

@@ -9,8 +9,9 @@ public class FastestGrabFloorReplyExecutor extends AfterParsingReplyExecutor {
 	public FastestGrabFloorReplyExecutor(String loginUser, 
 			                             String parsePageURL,
 			                             ExecutorConfig executorConfig, 
+			                             String parseKeyWord,
 			                             String replyContent) {
-		super(loginUser, parsePageURL, executorConfig);
+		super(loginUser, parsePageURL, executorConfig, parseKeyWord);
 		this.replyContent = replyContent;
 	}
 	

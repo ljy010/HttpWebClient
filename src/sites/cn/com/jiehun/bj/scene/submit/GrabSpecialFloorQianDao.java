@@ -14,14 +14,17 @@ public class GrabSpecialFloorQianDao {
 	public static void main(String[] args) {
 		ExecutorService executorService = Executors.newCachedThreadPool();
 
-        String replyContent = "ÇÀÂ¥À²ÇÀÂ¥À²¹þ¹þ";
-		
+		String parseKeyWord = DateUtils.getCurrentMonthDay() + "Ç©µ½";
+
+		String replyContent = "ÇÀÂ¥À²ÇÀÂ¥À²¹þ¹þ";
+
 		ExecutorConfig executorConfig = new ExecutorConfig();
 		executorConfig.setReplyIntegerval(0);
-		
-		int[] floors = {555};
-		
-		GrabSpecialFloor grabSpecialFloor = new GrabSpecialFloor("ljy", executorConfig, floors, replyContent);
+
+		int[] floors = { 555 };
+
+		GrabSpecialFloor grabSpecialFloor = new GrabSpecialFloor("ljy",
+				executorConfig, floors, parseKeyWord, replyContent);
 
 		executorService.submit(grabSpecialFloor);
 

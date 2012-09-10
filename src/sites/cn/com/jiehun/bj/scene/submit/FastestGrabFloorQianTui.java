@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import core.common.DateUtils;
 import sites.cn.com.jiehun.bj.scene.executor.ExecutorConfig;
 
-public class FastestGrabFloorQianTui{
+public class FastestGrabFloorQianTui {
 
 	/**
 	 * @param args
@@ -14,10 +14,13 @@ public class FastestGrabFloorQianTui{
 	public static void main(String[] args) {
 		ExecutorService executorService = Executors.newCachedThreadPool();
 
-		String replyContent = DateUtils.getCurrentMonthDay() + "«©ÕÀ";
+		String parseKeyWord = DateUtils.getCurrentMonthDay() + "«©ÕÀ";
+//		String parseKeyWord = "9‘¬10»’«©ÕÀ";
+
+		String replyContent = "«©ÕÀ¡À«©ÕÀ¡Àπ˛";
 		ExecutorConfig executorConfig = new ExecutorConfig();
 		FastestGrabFloor fastestGrabFloor = new FastestGrabFloor("ljy",
-				executorConfig, replyContent);
+				executorConfig, parseKeyWord, replyContent);
 
 		executorService.submit(fastestGrabFloor);
 

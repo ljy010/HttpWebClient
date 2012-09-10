@@ -15,9 +15,8 @@ public class LoginRequestAction<T> extends RequestAbstractAction<T> {
 	private String loginUser = "ljy";
 	
 	public LoginRequestAction(HttpClient httpClient, ResponseHandler<T> responseHandler, String loginUser) {
-		super(httpClient, responseHandler);
+		super(httpClient, ForumConst.FORUM_LOGIN_ACTION_URL, responseHandler);
 		this.loginUser = loginUser;
-		setRequestURL(ForumConst.FORUM_LOGIN_ACTION_URL);
 	}
 	
 	@Override

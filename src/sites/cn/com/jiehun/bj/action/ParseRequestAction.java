@@ -13,9 +13,9 @@ public class ParseRequestAction<T> extends RequestAbstractAction<T> {
 	
 	private String referURL = ForumConst.FORUM_GET_REFER_URL;
 
-	public ParseRequestAction(HttpClient httpClient,
+	public ParseRequestAction(HttpClient httpClient, String requestURL,
 			ResponseHandler<T> responseHandler) {
-		super(httpClient, responseHandler);
+		super(httpClient, requestURL, responseHandler);
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class ParseRequestAction<T> extends RequestAbstractAction<T> {
 			httpHeaders.addOrUpdateHeader("Referer", referURL);
 		}
 		HttpEntity<T> httpEntity = new HttpGetEntity<T>(getRequestURL());
-		//httpEntity.setHttpHeaders(httpHeaders);
+		httpEntity.setHttpHeaders(httpHeaders);
 		
 		return httpEntity.execute(getHttpClient(), getResponseHandler());
 	}

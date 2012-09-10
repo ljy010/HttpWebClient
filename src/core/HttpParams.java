@@ -59,6 +59,15 @@ public class HttpParams {
 		return nameValuePairs;
 	}
 	
+	public boolean checkIsValid(){
+		for(HttpParam httpParam : formParams){
+			if(httpParam.getParamVal().equals("")){
+				throw new RuntimeException(httpParam.getParamName() + "的值没有取到!");
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * @param args
 	 */

@@ -41,13 +41,15 @@ public abstract class AfterParsingReplyExecutor extends ReplyAbstractExecutor im
 	
 	public AfterParsingReplyExecutor(String loginUser, 
 			                         String parsePageURL, 
-			                         ExecutorConfig executorConfig) {
+			                         ExecutorConfig executorConfig,
+			                         String parseKeyWord) {
 		super(loginUser);
 		this.parsePageURL = parsePageURL;
 		this.config = executorConfig;
 		this.parseResult = new ParseResult();
 		this.replyState = new ReplyState();
 		this.formReplyParams = new HttpParams();
+		this.parseKeyWord = parseKeyWord;
 		initFormParseMap();
 		initFormParamValMap();
 	}
@@ -56,7 +58,7 @@ public abstract class AfterParsingReplyExecutor extends ReplyAbstractExecutor im
 			                         String parsePageURL, 
 			                         ExecutorConfig executorConfig, 
 			                         ParseResult parseResult){
-		this(loginUser, parsePageURL, executorConfig);
+		this(loginUser, parsePageURL, executorConfig, "");
 		this.parseResult = parseResult;
 	}
 	
@@ -87,10 +89,7 @@ public abstract class AfterParsingReplyExecutor extends ReplyAbstractExecutor im
 		}
 	}
 	
-	protected ResponseHandler<HttpParams> createParseFormResponseHandler(String url){
-		if((url == null) || ("".equals(url))){
-			throw new RuntimeException("解析form参数地址不能为空!");
-		}
+	protected ResponseHandler<HttpParams> createParseFormResponseHandler(){
 		if(parseFormParamsHandler == null){
 			parseFormParamsHandler = new ParseFormParamHandler(this.formReplyParams, formParamValMap, formPropMap);
 		}
@@ -111,11 +110,14 @@ public abstract class AfterParsingReplyExecutor extends ReplyAbstractExecutor im
 	protected boolean isParsed(){
 		boolean isParsed = checkParseResult();
 		try{
+			if(isParsed){
+				return true;
+			}
 			ResponseHandler<ParseResult> parseResponseHandler = createParseResponseHandler();
-			ParseRequestAction<ParseResult> parseRequest = new ParseRequestAction<ParseResult>(getHttpClient(),  parseResponseHandler);
-			parseRequest.setRequestURL(this.parsePageURL);
+			ParseRequestAction<ParseResult> parseRequest = new ParseRequestAction<ParseResult>(getHttpClient(), this.parsePageURL, parseResponseHandler);
 			
 			while(!isParsed){
+				System.out.println("正在解析地址...");
 				parseResult = parseRequest.execute();
 				isParsed = checkParseResult();
 				if(!isParsed){
@@ -128,18 +130,17 @@ public abstract class AfterParsingReplyExecutor extends ReplyAbstractExecutor im
 		return isParsed;
 	}
 	
-	protected boolean checkHttpParams(HttpParams httpParams){
-		String postCount = httpParams.getHttpParamVal(ForumConst.FORM_REPLY_INPUT_PARAM_NAME_POST_TOTAL);
-		return ("".equals(postCount)) ? false : true;
-	}
-	
 	protected HttpParams createReplyHttpParams(){
-		ResponseHandler<HttpParams> parseFormParamHandler = createParseFormResponseHandler(this.parseResult.getResult());
-		ParseRequestAction<HttpParams> parseRequestAction = new ParseRequestAction<HttpParams>(getHttpClient(), parseFormParamHandler);
+		ResponseHandler<HttpParams> parseFormParamHandler = createParseFormResponseHandler();
+		ParseRequestAction<HttpParams> parseRequestAction = new ParseRequestAction<HttpParams>(getHttpClient(), this.parseResult.getResult(), parseFormParamHandler);
 		return parseRequestAction.execute();
 	}
 	
 	protected abstract String getReplyContent();
+	
+	protected boolean checkHttpParams(HttpParams httpParams) {
+		return httpParams.checkIsValid();
+	}
 	
 	protected ReplyState doReply(){
 		try{
@@ -147,15 +148,17 @@ public abstract class AfterParsingReplyExecutor extends ReplyAbstractExecutor im
 				throw new RuntimeException("回复帖子地址不能为空!");
 			}
 			HttpParams httpParams = createReplyHttpParams();
+			String replyContent = getReplyContent();
+			httpParams.addOrUpdateHttpFormParam(ForumConst.FORM_REPLY_INPUT_NAME, replyContent);
+			
 			if(checkHttpParams(httpParams)){
-				String replyContent = getReplyContent();
-				httpParams.addOrUpdateHttpFormParam(ForumConst.FORM_REPLY_INPUT_NAME, replyContent);
 				ResponseHandler<ReplyState> replyResponseHandler = new PrintReplyResponseHandler(this.replyState);
-				ReplyRequestAction<ReplyState> replyRequestAction = new ReplyRequestAction<ReplyState>(getHttpClient(), replyResponseHandler, httpParams, this.parseResult.getResult());
+				ReplyRequestAction<ReplyState> replyRequestAction = new ReplyRequestAction<ReplyState>(getHttpClient(), replyResponseHandler, httpParams, ForumConst.REPLY_POST_ACTION_URL, null);
 				return replyRequestAction.execute();
 			}else{
-				throw new RuntimeException("检验form参数不对!");
+				throw new RuntimeException("httpParams检验不合法!");
 			}
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

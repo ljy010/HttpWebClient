@@ -22,8 +22,9 @@ public class GrabSpecialFloorReplyExecutor extends AfterParsingReplyExecutor {
 			                             String parsePageURL,
 			                             ExecutorConfig executorConfig, 
 			                             int[] floors, 
+			                             String parseKeyWord,
 			                             String replyStr) {
-		super(loginUser, parsePageURL, executorConfig);
+		super(loginUser, parsePageURL, executorConfig, parseKeyWord);
 		this.floors = floors;
 		this.replyStr = replyStr;
 	}
@@ -41,6 +42,7 @@ public class GrabSpecialFloorReplyExecutor extends AfterParsingReplyExecutor {
 		String floorCountStr = httpParams
 				.getHttpParamVal(ForumConst.FORM_REPLY_INPUT_PARAM_NAME_POST_TOTAL);
 		int floorCount = Integer.valueOf(floorCountStr) + 1;
+		System.out.println("当前楼数:" + floorCount);
 		return floorCount;
 	}
 
@@ -67,6 +69,7 @@ public class GrabSpecialFloorReplyExecutor extends AfterParsingReplyExecutor {
 					}
 
 				}
+				throw new RuntimeException("所要抢的楼层都被占了!!");
 
 			} else {
 				throw new RuntimeException("没有解析取到楼层总数!");

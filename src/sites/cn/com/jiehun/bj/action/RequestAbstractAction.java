@@ -5,23 +5,19 @@ import org.apache.http.client.ResponseHandler;
 
 public abstract class RequestAbstractAction<T> implements RequestionAction<T> {
 
-	private HttpClient httpClient;
+	protected HttpClient httpClient;
 	
-	private ResponseHandler<T> responseHandler;
+	protected ResponseHandler<T> responseHandler;
 	
-	private String requestURL = null;
+	protected String requestURL = null;
 	
 	protected ResponseHandler<T> getResponseHandler(){
 		return this.responseHandler;
 	}
 	
-	public RequestAbstractAction(HttpClient httpClient, ResponseHandler<T> responseHandler){
+	public RequestAbstractAction(HttpClient httpClient, String requestURL, ResponseHandler<T> responseHandler){
 		this.httpClient = httpClient;
 		this.responseHandler = responseHandler;
-	}
-	
-	public RequestAbstractAction(HttpClient httpClient, String requestURL, ResponseHandler<T> responseHandler){
-		this(httpClient, responseHandler);
 		this.requestURL = requestURL;
 	}
 	
