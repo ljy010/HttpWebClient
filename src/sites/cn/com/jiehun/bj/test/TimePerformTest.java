@@ -3,7 +3,7 @@ package sites.cn.com.jiehun.bj.test;
 import sites.cn.com.jiehun.bj.dataConst.ForumConst;
 import core.HttpParams;
 
-public class TestPerformTest {
+public class TimePerformTest {
 	
 	private static FunctionTest functionTest = new FunctionTest();
 	

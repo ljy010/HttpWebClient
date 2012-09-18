@@ -19,7 +19,7 @@ public class FastestGrabFloorQianTui {
 
 		String replyContent = "«©ÕÀ¡À«©ÕÀ¡Àπ˛";
 		ExecutorConfig executorConfig = new ExecutorConfig();
-		FastestGrabFloor fastestGrabFloor = new FastestGrabFloor("ljy",
+		FastestGrabFloor fastestGrabFloor = new FastestGrabFloor("dr",
 				executorConfig, parseKeyWord, replyContent);
 
 		executorService.submit(fastestGrabFloor);

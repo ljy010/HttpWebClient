@@ -5,7 +5,7 @@ public class ExecutorConfig {
 	
 	private long parseInterval = 500;
 	
-	private long replyIntegerval = 3500;
+	private long replyIntegerval = 3000;
 
 	public long getParseInterval() {
 		return parseInterval;

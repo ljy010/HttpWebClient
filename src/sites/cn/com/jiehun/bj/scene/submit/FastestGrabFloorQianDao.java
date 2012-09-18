@@ -15,7 +15,7 @@ public class FastestGrabFloorQianDao {
 
 		String replyContent = "签到了签到了哈";
 		ExecutorConfig executorConfig = new ExecutorConfig();
-		FastestGrabFloor fastestGrabFloor = new FastestGrabFloor("ljy",
+		FastestGrabFloor fastestGrabFloor = new FastestGrabFloor("dr",
 				executorConfig, parseKeyWord, replyContent);
 
 		executorService.submit(fastestGrabFloor);

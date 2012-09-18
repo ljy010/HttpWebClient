@@ -2,9 +2,6 @@ package sites.cn.com.jiehun.bj.scene.executor;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import core.HttpClientFactory;
 
 import sites.cn.com.jiehun.bj.action.LoginRequestAction;
 import sites.cn.com.jiehun.bj.scene.LoginScene;
@@ -12,6 +9,7 @@ import sites.cn.com.jiehun.bj.scene.LoginState;
 import sites.cn.com.jiehun.bj.scene.ReplyScene;
 import sites.cn.com.jiehun.bj.scene.ReplyState;
 import sites.cn.com.jiehun.bj.scene.responseHandler.LoginResponseHanlder;
+import core.HttpClientFactory;
 
 public abstract class ReplyAbstractExecutor implements ReplyScene, LoginScene {
 
